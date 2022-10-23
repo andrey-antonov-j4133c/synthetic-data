@@ -11,4 +11,7 @@
   -- Book reviews by users.
   
 - [Daily Climate time series data](https://www.kaggle.com/datasets/sumanthvrao/daily-climate-time-series-data) 
-  -- Time-stamped climate data from Deli, India
+  -- Time-stamped climate data from Deli, India.
+  
+- [S&P 500](https://www.kaggle.com/datasets/andrewmvd/sp-500-stocks?select=sp500_stocks.csv) 
+  -- Time-stamped stock prices.
