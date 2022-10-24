@@ -15,3 +15,11 @@
   
 - [S&P 500](https://www.kaggle.com/datasets/andrewmvd/sp-500-stocks?select=sp500_stocks.csv) 
   -- Time-stamped stock prices.
+  
+
+## Methods:
+- [GAN for tabular data](https://github.com/Diyago/GAN-for-tabular-data)
+- [CTGAN](https://github.com/sdv-dev/CTGAN)
+- [TabFairGAN](https://github.com/amirarsalan90/TabFairGAN)
+- [TGAN](https://github.com/sdv-dev/TGAN)
+- [GRETEL](https://github.com/gretelai/gretel-synthetics)
