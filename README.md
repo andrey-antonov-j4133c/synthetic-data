@@ -16,6 +16,9 @@
 - [S&P 500](https://www.kaggle.com/datasets/andrewmvd/sp-500-stocks?select=sp500_stocks.csv) 
   -- Time-stamped stock prices.
   
+- [Income](https://www.kaggle.com/datasets/mastmustu/income?resource=download&select=train.csv)
+  -- Individual income
+  
 
 ## Methods:
 - [GAN for tabular data](https://github.com/Diyago/GAN-for-tabular-data)
