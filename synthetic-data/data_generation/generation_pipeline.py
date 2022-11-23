@@ -4,7 +4,7 @@ import ray
 
 from data_generation.data_reader import DataSet
 from data_generation.dataset_definition import DatasetDefinition
-from method import CTGAN, TabFiarGAN, TabFiarGANConsistent
+from data_generation.method import CTGAN, TabFiarGAN, TabFiarGANConsistent
 
 BASE_DIR = 'data/'
 DATAPATHS = [
