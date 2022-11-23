@@ -3,7 +3,7 @@ from typing import List
 import pandas
 import torch
 
-from ctgan import CTGANSynthesizer
+from ctgan import CTGAN
 from TabFairGAN_consistency.TabFairGAN_consistency import train, get_original_data
 
 
@@ -33,7 +33,7 @@ class CTGAN(Method):
         self.name = 'CTGAN'
 
     def fit(self, df, epochs, cat_cols, **kwargs):
-        self.ctgan = CTGANSynthesizer(epochs=epochs)
+        self.ctgan = CTGAN(epochs=epochs)
         self.ctgan.fit(df, cat_cols)
 
     def sample(self, num_samples: int) -> pandas.DataFrame:
