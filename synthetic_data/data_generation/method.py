@@ -4,7 +4,7 @@ import pandas
 import torch
 
 from ctgan import CTGAN
-from TabFairGAN_consistency.TabFairGAN_consistency import train, get_original_data
+from synthetic_data.TabFairGAN_consistency.TabFairGAN_consistency import train, get_original_data
 
 
 class Method:
