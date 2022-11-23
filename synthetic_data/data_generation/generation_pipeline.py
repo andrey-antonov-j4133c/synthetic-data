@@ -18,6 +18,7 @@ DATAPATHS = [
 NUM_OF_EXPERIMENTS = 24
 EPOCHS = 10
 NUM_SAMPLES = 1000
+RAY = False
 
 SYNTHETIC_PATH = 'data/_generated/'
 
@@ -44,19 +45,30 @@ METHODS = [
 ]
 
 
-@ray.remote
-def experiment(method, d, dataset, num_samples, experiments_path, exp_num):
-    m = method(d.df, dataset.categorical_cols, dataset.target_col, EPOCHS)
-    samples = m.sample(num_samples)
-    # Write synthetic samples
-    samples.to_csv(
-        path.join(experiments_path, dataset.name + f'_{m.name}_{exp_num}.csv'),
-        index=False
-    )
+if RAY:
+    @ray.remote
+    def experiment(method, d, dataset, num_samples, experiments_path, exp_num):
+        m = method(d.df, dataset.categorical_cols, dataset.target_col, EPOCHS)
+        samples = m.sample(num_samples)
+        # Write synthetic samples
+        samples.to_csv(
+            path.join(experiments_path, dataset.name + f'_{m.name}_{exp_num}.csv'),
+            index=False
+        )
+else:
+    def experiment(method, d, dataset, num_samples, experiments_path, exp_num):
+        m = method(d.df, dataset.categorical_cols, dataset.target_col, EPOCHS)
+        samples = m.sample(num_samples)
+        # Write synthetic samples
+        samples.to_csv(
+            path.join(experiments_path, dataset.name + f'_{m.name}_{exp_num}.csv'),
+            index=False
+        )
 
 
 def main():
-    ray.init()
+    if RAY:
+        ray.init()
     for dataset in DATASETS:
         d = DataSet(dataset.path, to_drop=dataset.to_drop)
         # Sample from original dataset and save to file
@@ -73,8 +85,12 @@ def main():
         experiments = []
         for method in METHODS:
             for exp_num in range(NUM_OF_EXPERIMENTS):
-                experiments.append(experiment.remote(method, d, dataset, num_samples, experiments_path, exp_num))
-        ray.get(experiments)
+                if RAY:
+                    experiments.append(experiment.remote(method, d, dataset, num_samples, experiments_path, exp_num))
+                else:
+                    experiment(method, d, dataset, num_samples, experiments_path, exp_num)
+        if RAY:
+            ray.get(experiments)
 
 
 if __name__ == "__main__":
