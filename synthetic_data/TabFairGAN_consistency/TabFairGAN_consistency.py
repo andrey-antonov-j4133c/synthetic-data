@@ -195,6 +195,7 @@ def get_consistency_model(train_data, target_index):
     x_train = np.delete(train_data, target_index, 1)
     y_train = train_data[:, target_index]
     consistency_model = GradientBoostingClassifier(
+        loss='exponential',
         n_estimators=100,
         learning_rate=1.0,
         max_depth=1

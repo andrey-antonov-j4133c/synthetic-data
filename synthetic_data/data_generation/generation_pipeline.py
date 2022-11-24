@@ -15,10 +15,10 @@ DATAPATHS = [
     #'movie-dataset/ratings.csv'
 ]
 
-NUM_OF_EXPERIMENTS = 24
+NUM_OF_EXPERIMENTS = 96
 EPOCHS = 10
 NUM_SAMPLES = 1000
-RAY = False
+RAY = True
 
 SYNTHETIC_PATH = 'data/_generated/'
 
@@ -39,9 +39,9 @@ DATASETS = [
 ]
 
 METHODS = [
-    #CTGAN,
-    TabFiarGAN,
-    TabFiarGANConsistent
+    CTGAN,
+    #TabFiarGAN,
+    #TabFiarGANConsistent
 ]
 
 

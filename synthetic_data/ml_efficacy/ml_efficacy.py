@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier
 
-NUM_OF_EXPERIMENTS = 24
+NUM_OF_EXPERIMENTS = 96
 DATA_PATH = 'results/'
 
 SYNTHETIC_PATH = 'data/_generated/'
@@ -19,7 +19,7 @@ DATASETS = [
 ]
 METHODS = [
     #'CTGAN',
-    'TabFairGAN',
+    'TabFairGan',
     'TabFairGanConsistent'
 ]
 
