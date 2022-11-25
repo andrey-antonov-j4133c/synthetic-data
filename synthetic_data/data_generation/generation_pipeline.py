@@ -4,7 +4,7 @@ import ray
 
 from synthetic_data.data_generation.data_reader import DataSet
 from synthetic_data.data_generation.dataset_definition import DatasetDefinition
-from synthetic_data.data_generation.method import CTGAN, TabFiarGAN, TabFiarGANConsistent
+from synthetic_data.data_generation.method import CTGAN, TabFiarGAN, TabFiarGANConsistent, CTGANConsistency
 
 BASE_DIR = 'data/'
 DATAPATHS = [
@@ -15,10 +15,10 @@ DATAPATHS = [
     #'movie-dataset/ratings.csv'
 ]
 
-NUM_OF_EXPERIMENTS = 96
+NUM_OF_EXPERIMENTS = 2
 EPOCHS = 10
 NUM_SAMPLES = 1000
-RAY = True
+RAY = False
 
 SYNTHETIC_PATH = 'data/_generated/'
 
@@ -40,6 +40,7 @@ DATASETS = [
 
 METHODS = [
     CTGAN,
+    CTGANConsistency,
     #TabFiarGAN,
     #TabFiarGANConsistent
 ]

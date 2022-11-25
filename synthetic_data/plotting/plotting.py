@@ -7,16 +7,17 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-NUM_OF_EXPERIMENTS = 24
+NUM_OF_EXPERIMENTS = 2
 DATA_PATH = 'results/'
 
 DATASETS = [
     ('Income', 'gender', 'capital-gain')
 ]
 METHODS = [
-    #'CTGAN',
-    'TabFairGAN',
-    'TabFairGanConsistent'
+    'CTGAN',
+    'CTGANConsistency',
+    #'TabFairGAN',
+    #'TabFairGanConsistent'
 ]
 
 CLS_METHODS = ['Boosting']

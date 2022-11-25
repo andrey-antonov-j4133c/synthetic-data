@@ -219,7 +219,7 @@ def get_consistency_penalty(data, generated, consistency_metrics, model, target_
     result = torch.tensor(0)
     for metric in consistency_metrics:
         res = metric(pred_true.int(), y_true.int()) - metric(pred_fake.int(), y_fake.int())
-        torch.add(result, torch.abs(res))
+        result += torch.abs(res)
     return result
 
 
