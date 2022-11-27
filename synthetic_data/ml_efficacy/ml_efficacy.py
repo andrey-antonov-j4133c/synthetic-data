@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier
 
-NUM_OF_EXPERIMENTS = 2
+NUM_OF_EXPERIMENTS = 24
 DATA_PATH = 'results/'
 
 SYNTHETIC_PATH = 'data/_generated/'

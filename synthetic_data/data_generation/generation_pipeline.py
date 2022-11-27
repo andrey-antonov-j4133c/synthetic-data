@@ -7,28 +7,14 @@ from synthetic_data.data_generation.dataset_definition import DatasetDefinition
 from synthetic_data.data_generation.method import CTGAN, TabFiarGAN, TabFiarGANConsistent, CTGANConsistency
 
 BASE_DIR = 'data/'
-DATAPATHS = [
-    #'climate-data/DailyDelhiClimateTest.csv',
-    #'Books/ratings.csv',
-    #'IMDB/data.tsv',
-    #'movie-dataset/movies_metadata.csv',
-    #'movie-dataset/ratings.csv'
-]
-
-NUM_OF_EXPERIMENTS = 2
-EPOCHS = 10
+NUM_OF_EXPERIMENTS = 24
+EPOCHS = 25
 NUM_SAMPLES = 1000
-RAY = False
+RAY = True
 
 SYNTHETIC_PATH = 'data/_generated/'
 
 DATASETS = [
-    #DatasetDefinition(
-    #    name='MovieRatings',
-    #    path='data/movie-dataset/movies_metadata.csv',
-    #    categorical_cols=['adult', 'original_language', 'status', 'video'],
-    #    to_drop=['homepage', 'imdb_id', 'original_title', 'overview', 'poster_path', 'release_date', 'title', 'tagline']
-    #),
     DatasetDefinition(
         name='Income',
         path='data/income/train.csv',

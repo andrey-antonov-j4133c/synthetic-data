@@ -5,6 +5,7 @@ import torch
 
 from synthetic_data.ctgan_consistency.synthesizers.ctgan import CTGAN as CTGANSynth
 from synthetic_data.TabFairGAN_consistency.TabFairGAN_consistency import train, get_original_data
+from synthetic_data.helpers.helpers import get_device
 
 
 class Method:
@@ -78,7 +79,7 @@ class TabFiarGAN(Method):
         )
 
     def sample(self, num_samples: int) -> pandas.DataFrame:
-        device = torch.device("cuda:0" if (torch.cuda.is_available() and 1 > 0) else "cpu")
+        device = get_device()
         fake_numpy_array = self.generator(
             torch.randn(
                 size=(num_samples, self.input_dim),
@@ -116,7 +117,7 @@ class TabFiarGANConsistent(Method):
         )
 
     def sample(self, num_samples: int) -> pandas.DataFrame:
-        device = torch.device("cuda:0" if (torch.cuda.is_available() and 1 > 0) else "cpu")
+        device = get_device()
         fake_numpy_array = self.generator(
             torch.randn(
                 size=(num_samples, self.input_dim),

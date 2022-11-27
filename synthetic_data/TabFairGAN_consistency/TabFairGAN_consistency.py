@@ -23,7 +23,9 @@ from sklearn.preprocessing import QuantileTransformer
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier
 
-DEVICE = torch.device("cuda:0" if (torch.cuda.is_available() and 1 > 0) else "cpu")
+from synthetic_data.helpers.helpers import get_device
+
+DEVICE = get_device()
 DISPLAY_STEP = 50
 
 CLASSIFICATION_METHODS = [

@@ -4,6 +4,7 @@ import pandas as pd
 import torch
 
 from methods.TabFairGAN.TabFairGAN_nofair import get_original_data, train_plot
+from synthetic_data.helpers.helpers import get_device
 
 
 def tab_fair_gan_no_fairness(
@@ -22,7 +23,7 @@ def tab_fair_gan_no_fairness(
     n_epochs = 20
     batch_size = 64
 
-    device = torch.device("cuda:0" if (torch.cuda.is_available() and 1 > 0) else "cpu")
+    device = get_device()
 
     generator, critic, ohe, scaler, data_train, data_test, input_dim = train_plot(
         df,
