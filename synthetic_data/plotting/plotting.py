@@ -4,11 +4,15 @@ from typing import List
 
 import pandas as pd
 
+import matplotlib
 import matplotlib.pyplot as plt
 
 
+matplotlib.rcParams.update({'font.size': 14})
+
 NUM_OF_EXPERIMENTS = 24
 DATA_PATH = 'results/'
+SAVE = False
 
 DATASETS = [
     ('Income', 'gender', 'capital-gain')
@@ -32,7 +36,8 @@ def time_plot(
         num_of_experiments: int,
         methods: List[str],
         efficacy_method: str,
-        metric_name: str
+        metric_name: str,
+        fig_path: str
 ):
     plt.plot(
         range(num_of_experiments),
@@ -46,10 +51,14 @@ def time_plot(
 
     plt.xlabel("Experiment number")
     plt.ylabel("Metric value")
+    plt.legend()
 
     plt.title(f"{metric_name} score, real vs generated.\n {efficacy_method}")
-    plt.legend()
-    plt.show()
+    if SAVE:
+        plt.savefig(path.join(fig_path, f'time-plot {efficacy_method}{metric_name}.svg'))
+        plt.clf()
+    else:
+        plt.show()
 
 
 def box_plot(
@@ -57,15 +66,20 @@ def box_plot(
         df: pd.DataFrame,
         methods: List[str],
         efficacy_method: str,
+        fig_path: str
 ):
-    for method in methods:
-        for i, metric in enumerate(CLS_METRICS):
-            metric_values = df[df['gener. method'] == method][[metric]]
-            metric_values.plot(kind='box', title=f'{method}-{efficacy_method}\n{metric}')
-            real_value = real_values[metric][0]
-            plt.axhline(y=real_value, label=f"Real {metric} value", color='red')
-            plt.legend()
+    for i, metric in enumerate(CLS_METRICS):
+        metric_values = df[df['gener. method'].isin(methods)][['Exp. number', 'gener. method', metric]]
+        metric_values = metric_values.groupby(['Exp. number', 'gener. method'])[metric].first().unstack()
+        metric_values.plot(kind='box', title=f'{efficacy_method}\n{metric}')
+        real_value = real_values[metric][0]
+        plt.axhline(y=real_value, label=f"Real {metric} value", color='red')
+        if SAVE:
+            plt.savefig(path.join(fig_path, f'box-plot -{efficacy_method}-{metric}.svg'))
+            plt.clf()
+        else:
             plt.show()
+
 
 def main():
     for dataset_name, cls_column, reg_column in DATASETS:
@@ -86,13 +100,15 @@ def main():
                     methods=METHODS,
                     metric_name=metric,
                     efficacy_method=cls_method,
-                    num_of_experiments=NUM_OF_EXPERIMENTS
+                    num_of_experiments=NUM_OF_EXPERIMENTS,
+                    fig_path=plots_path
                 )
             box_plot(
                 real_values=cls_real_result,
                 df=exp_df,
                 methods=METHODS,
                 efficacy_method=cls_method,
+                fig_path=plots_path
             )
 
 

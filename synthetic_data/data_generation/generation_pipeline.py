@@ -7,9 +7,8 @@ from synthetic_data.data_generation.dataset_definition import DatasetDefinition
 from synthetic_data.data_generation.method import CTGAN, TabFiarGAN, TabFiarGANConsistent, CTGANConsistency
 
 BASE_DIR = 'data/'
-NUM_OF_EXPERIMENTS = 24
+EXPERIMENTS_RANGE = range(6, 24)
 EPOCHS = 25
-NUM_SAMPLES = 1000
 RAY = True
 
 SYNTHETIC_PATH = 'data/_generated/'
@@ -61,7 +60,6 @@ def main():
         # Sample from original dataset and save to file
         experiments_path = path.join(SYNTHETIC_PATH, dataset.name + '/')
         #pathlib.Path(experiments_path).mkdir(parents=True, exist_ok=True)
-        num_samples = NUM_SAMPLES if len(d.df) > NUM_SAMPLES else len(d.df)
         num_samples = len(d.df)
         original_samples = d.df.sample(n=num_samples)
         pathlib.Path(experiments_path).mkdir(parents=True, exist_ok=True)
@@ -71,7 +69,7 @@ def main():
         )
         experiments = []
         for method in METHODS:
-            for exp_num in range(NUM_OF_EXPERIMENTS):
+            for exp_num in EXPERIMENTS_RANGE:
                 if RAY:
                     experiments.append(experiment.remote(method, d, dataset, num_samples, experiments_path, exp_num))
                 else:
