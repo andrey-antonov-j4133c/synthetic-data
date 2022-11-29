@@ -25,8 +25,6 @@ METHODS = [
 ]
 
 CLASSIFICATION_METHODS = [
-    #(RandomForestClassifier, 'Random Forest', {'max_depth': 3}),
-    #(SGDClassifier, 'SGD', {})
     (GradientBoostingClassifier, 'Boosting', {'n_estimators': 100, 'learning_rate': 1.0, 'max_depth': 1})
 ]
 
@@ -53,8 +51,8 @@ def classification(df: pandas.DataFrame, target_col: str, clf=None):
     res = list()
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
     for cls, name, args in CLASSIFICATION_METHODS:
-        if clf is None:
-            clf = cls(**args)
+        #if clf is None:
+        clf = cls(**args)
         clf.fit(X_train, y_train)
         y_pred = clf.predict(X_test)
 
@@ -73,15 +71,16 @@ def classification(df: pandas.DataFrame, target_col: str, clf=None):
     return res, clf
 
 
-def regression(df: pandas.DataFrame, target_col: str) -> List[dict]:
+def regression(df: pandas.DataFrame, target_col: str, reg=None):
     X = df.loc[:, df.columns != target_col]
     y = df[target_col]
     res = list()
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
     for cls, name, args in REGRESSION_METHODS:
-        clf = cls(**args)
-        clf.fit(X_train, y_train)
-        y_pred = clf.predict(X_test)
+        #if reg is None:
+        reg = cls(**args)
+        reg.fit(X_train, y_train)
+        y_pred = reg.predict(X_test)
         result_row = {
             'regg. method': name,
             'explained_variance': metrics.explained_variance_score(y_test, y_pred),
@@ -90,15 +89,24 @@ def regression(df: pandas.DataFrame, target_col: str) -> List[dict]:
             'mean_squared_error': metrics.mean_squared_error(y_test, y_pred)
         }
         res.append(result_row)
-    return res
+    return res, reg
 
 
 def main():
     for dataset_name, classification_coll, regression_col in DATASETS:
-        original_df = pandas.read_csv(path.join(SYNTHETIC_PATH, dataset_name + '/', f'{dataset_name}_original.csv'))
-        column_transformers = get_transformers(original_df)
+
+        clf_original_df = pandas.read_csv(
+            #path.join(SYNTHETIC_PATH, dataset_name + '/', f'{dataset_name}_{classification_coll}_original.csv')
+            path.join(SYNTHETIC_PATH, dataset_name + '/', f'{dataset_name}_original.csv')
+        )
+        reg_original_df = pandas.read_csv(
+            #path.join(SYNTHETIC_PATH, dataset_name + '/', f'{dataset_name}_{classification_coll}_original.csv')
+            path.join(SYNTHETIC_PATH, dataset_name + '/', f'{dataset_name}_original.csv')
+        )
+        column_transformers = get_transformers(clf_original_df)
         for col, encoder in column_transformers.items():
-            original_df[col] = encoder.transform(original_df[col].to_numpy().reshape(-1, 1))
+            clf_original_df[col] = encoder.transform(clf_original_df[col].to_numpy().reshape(-1, 1))
+            reg_original_df[col] = encoder.transform(reg_original_df[col].to_numpy().reshape(-1, 1))
 
         classification_results = pandas.DataFrame(
             columns=['Exp. number', 'gener. method', 'class. method', 'f1', 'precision', 'recall', 'accuracy']
@@ -111,32 +119,43 @@ def main():
         )
 
         if classification_coll:
-            real_classification_res, clf = classification(original_df, classification_coll)
+            real_classification_res, clf = classification(clf_original_df, classification_coll)
             for result_row in real_classification_res:
                 result_row['gener. method'] = 'Real'
                 result_row['Exp. number'] = 0
                 classification_results = classification_results.append(result_row, ignore_index=True)
         if regression_col:
-            for result_row in regression(original_df, regression_col):
+            real_reg_res, reg = regression(reg_original_df, regression_col)
+            for result_row in real_reg_res:
                 result_row['gener. method'] = 'Real'
                 result_row['Exp. number'] = 0
                 regression_results = regression_results.append(result_row, ignore_index=True)
 
         for method in METHODS:
             for num_exp in range(NUM_OF_EXPERIMENTS):
-                synthetic_df = pandas.read_csv(
-                    path.join(SYNTHETIC_PATH, dataset_name + '/', f'{dataset_name}_{method}_{num_exp}.csv')
-                )
-                for col, encoder in column_transformers.items():
-                    synthetic_df[col] = encoder.transform(synthetic_df[col].to_numpy().reshape(-1, 1))
                 if classification_coll:
+                    synthetic_df = pandas.read_csv(
+                        path.join(SYNTHETIC_PATH, dataset_name + '/',
+                                  #f'{dataset_name}_{method}_{classification_coll}_{num_exp}.csv')
+                                  f'{dataset_name}_{method}_{num_exp}.csv')
+                    )
+                    for col, encoder in column_transformers.items():
+                        synthetic_df[col] = encoder.transform(synthetic_df[col].to_numpy().reshape(-1, 1))
                     synth_class_result, _ = classification(synthetic_df, classification_coll, clf)
                     for result_row in synth_class_result:
                         result_row['gener. method'] = method
                         result_row['Exp. number'] = num_exp
                         classification_results = classification_results.append(result_row, ignore_index=True)
                 if regression_col:
-                    for result_row in regression(synthetic_df, regression_col):
+                    synthetic_df = pandas.read_csv(
+                        path.join(SYNTHETIC_PATH, dataset_name + '/',
+                                  #f'{dataset_name}_{method}_{regression_col}_{num_exp}.csv')
+                                  f'{dataset_name}_{method}_{num_exp}.csv')
+                    )
+                    for col, encoder in column_transformers.items():
+                        synthetic_df[col] = encoder.transform(synthetic_df[col].to_numpy().reshape(-1, 1))
+                    synth_reg_res, _ = regression(synthetic_df, regression_col, reg)
+                    for result_row in synth_reg_res:
                         result_row['gener. method'] = method
                         result_row['Exp. number'] = num_exp
                         regression_results = regression_results.append(result_row, ignore_index=True)

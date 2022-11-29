@@ -438,6 +438,7 @@ class CTGAN(BaseSynthesizer):
                             real.size()[1],
                             num_classes
                         )
+                        # TODO: may-be +penalty?
                         loss_d = -(torch.mean(y_real) - torch.mean(y_fake) - 0.5 * cons_pen)
                     else:
                         loss_d = -(torch.mean(y_real) - torch.mean(y_fake))

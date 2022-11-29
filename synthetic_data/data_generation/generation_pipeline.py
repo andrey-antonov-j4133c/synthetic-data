@@ -38,7 +38,7 @@ if RAY:
         samples = m.sample(num_samples)
         # Write synthetic samples
         samples.to_csv(
-            path.join(experiments_path, dataset.name + f'_{m.name}_{exp_num}.csv'),
+            path.join(experiments_path, dataset.name + f'_{m.name}_{exp_num}_{dataset.target_col}.csv'),
             index=False
         )
 else:
@@ -47,7 +47,7 @@ else:
         samples = m.sample(num_samples)
         # Write synthetic samples
         samples.to_csv(
-            path.join(experiments_path, dataset.name + f'_{m.name}_{exp_num}.csv'),
+            path.join(experiments_path, dataset.name + f'_{m.name}_{exp_num}_{dataset.target_col}.csv'),
             index=False
         )
 
@@ -64,7 +64,7 @@ def main():
         original_samples = d.df.sample(n=num_samples)
         pathlib.Path(experiments_path).mkdir(parents=True, exist_ok=True)
         original_samples.to_csv(
-            path.join(experiments_path, dataset.name + '_original.csv'),
+            path.join(experiments_path, dataset.name + f'_{dataset.target_col}_original.csv'),
             index=False
         )
         experiments = []
