@@ -8,9 +8,10 @@ from sklearn import metrics
 from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier, \
+    GradientBoostingRegressor
 
-NUM_OF_EXPERIMENTS = 24
+NUM_OF_EXPERIMENTS = 2
 DATA_PATH = 'results/'
 
 SYNTHETIC_PATH = 'data/_generated/'
@@ -25,11 +26,11 @@ METHODS = [
 ]
 
 CLASSIFICATION_METHODS = [
-    (GradientBoostingClassifier, 'Boosting', {'n_estimators': 100, 'learning_rate': 1.0, 'max_depth': 1})
+    (GradientBoostingClassifier, 'Boosting classifier', {'n_estimators': 100, 'learning_rate': 1.0, 'max_depth': 1})
 ]
 
 REGRESSION_METHODS = [
-    (RandomForestRegressor, 'Random Forest', {'max_depth': 3})
+    (GradientBoostingRegressor, 'Boosting regressor', dict())
 ]
 
 
@@ -96,12 +97,10 @@ def main():
     for dataset_name, classification_coll, regression_col in DATASETS:
 
         clf_original_df = pandas.read_csv(
-            #path.join(SYNTHETIC_PATH, dataset_name + '/', f'{dataset_name}_{classification_coll}_original.csv')
-            path.join(SYNTHETIC_PATH, dataset_name + '/', f'{dataset_name}_original.csv')
+            path.join(SYNTHETIC_PATH, dataset_name + '/', f'{dataset_name}_{classification_coll}_original.csv')
         )
         reg_original_df = pandas.read_csv(
-            #path.join(SYNTHETIC_PATH, dataset_name + '/', f'{dataset_name}_{classification_coll}_original.csv')
-            path.join(SYNTHETIC_PATH, dataset_name + '/', f'{dataset_name}_original.csv')
+            path.join(SYNTHETIC_PATH, dataset_name + '/', f'{dataset_name}_{classification_coll}_original.csv')
         )
         column_transformers = get_transformers(clf_original_df)
         for col, encoder in column_transformers.items():
@@ -136,8 +135,7 @@ def main():
                 if classification_coll:
                     synthetic_df = pandas.read_csv(
                         path.join(SYNTHETIC_PATH, dataset_name + '/',
-                                  #f'{dataset_name}_{method}_{classification_coll}_{num_exp}.csv')
-                                  f'{dataset_name}_{method}_{num_exp}.csv')
+                                  f'{dataset_name}_{method}_{num_exp}_{classification_coll}.csv')
                     )
                     for col, encoder in column_transformers.items():
                         synthetic_df[col] = encoder.transform(synthetic_df[col].to_numpy().reshape(-1, 1))
@@ -149,8 +147,7 @@ def main():
                 if regression_col:
                     synthetic_df = pandas.read_csv(
                         path.join(SYNTHETIC_PATH, dataset_name + '/',
-                                  #f'{dataset_name}_{method}_{regression_col}_{num_exp}.csv')
-                                  f'{dataset_name}_{method}_{num_exp}.csv')
+                                  f'{dataset_name}_{method}_{num_exp}_{regression_col}.csv')
                     )
                     for col, encoder in column_transformers.items():
                         synthetic_df[col] = encoder.transform(synthetic_df[col].to_numpy().reshape(-1, 1))
