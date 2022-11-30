@@ -7,8 +7,8 @@ from synthetic_data.data_generation.dataset_definition import DatasetDefinition
 from synthetic_data.data_generation.method import CTGAN, TabFiarGAN, TabFiarGANConsistent, CTGANConsistency
 
 BASE_DIR = 'data/'
-EXPERIMENTS_RANGE = range(0, 2)
-EPOCHS = 2
+EXPERIMENTS_RANGE = range(0, 48)
+EPOCHS = 25
 RAY = True
 
 SYNTHETIC_PATH = 'data/_generated/'
@@ -27,7 +27,28 @@ DATASETS = [
         categorical_cols=['workclass', 'educational-num', 'marital-status', 'occupation', 'relationship', 'race', 'gender', 'native-country', 'income_>50K', ],
         to_drop=['education'],
         target_col='gender'
-    )
+    ),
+    DatasetDefinition(
+        name='ClimateData',
+        path='data/climate-data/DailyDelhiClimateTest.csv',
+        categorical_cols=[],
+        to_drop=['date'],
+        target_col='meantemp'
+    ),
+    DatasetDefinition(
+        name='SnP',
+        path='data/SnP/sp500_stocks_reduced.csv',
+        categorical_cols=[],
+        to_drop=['Date', 'Symbol'],
+        target_col='Volume'
+    ),
+    DatasetDefinition(
+        name='SnP',
+        path='data/SnP/sp500_stocks_reduced.csv',
+        categorical_cols=[],
+        to_drop=['Date', 'Symbol'],
+        target_col='High'
+    ),
 ]
 
 METHODS = [

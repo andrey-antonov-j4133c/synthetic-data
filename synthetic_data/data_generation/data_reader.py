@@ -53,4 +53,5 @@ class DataSet:
     def cleanup(self, to_drop: List[str]) -> None:
         self.df.dropna(axis=0, inplace=True)
         if to_drop:
-            self.df.drop(to_drop, inplace=True, axis=1)
+            for col in to_drop:
+                self.df.drop(col, inplace=True, axis=1)
