@@ -7,9 +7,9 @@ from synthetic_data.data_generation.dataset_definition import DatasetDefinition
 from synthetic_data.data_generation.method import CTGAN, TabFiarGAN, TabFiarGANConsistent, CTGANConsistency
 
 BASE_DIR = 'data/'
-EXPERIMENTS_RANGE = range(6, 24)
-EPOCHS = 25
-RAY = True
+EXPERIMENTS_RANGE = range(0, 1)
+EPOCHS = 1
+RAY = False
 
 SYNTHETIC_PATH = 'data/_generated/'
 
@@ -19,12 +19,13 @@ DATASETS = [
         path='data/income/train.csv',
         categorical_cols=['workclass', 'educational-num', 'marital-status', 'occupation', 'relationship', 'race', 'gender', 'native-country', 'income_>50K', ],
         to_drop=['education'],
-        target_col='gender'
+        target_col='capital-gain'
+        #target_col='gender'
     )
 ]
 
 METHODS = [
-    CTGAN,
+    #CTGAN,
     CTGANConsistency,
     #TabFiarGAN,
     #TabFiarGANConsistent

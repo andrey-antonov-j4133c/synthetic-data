@@ -16,12 +16,13 @@ from torch.utils.data import TensorDataset
 from torch.utils.data import DataLoader
 import torch.nn.functional as f
 from torch import nn
-from torchmetrics import F1Score, Accuracy, Recall
+from torchmetrics import F1Score, Accuracy, Recall, MeanSquaredError
 
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import QuantileTransformer
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier, \
+    GradientBoostingRegressor
 
 from synthetic_data.helpers.helpers import get_device
 
@@ -193,21 +194,24 @@ def get_crit_loss(crit_fake_pred, crit_real_pred, gp, c_lambda):
     return crit_loss
 
 
-def get_consistency_model(train_data, target_index):
+def get_consistency_model(train_data, target_index, target_type):
     x_train = np.delete(train_data, target_index, 1)
     y_train = train_data[:, target_index]
-    consistency_model = GradientBoostingClassifier(
-        loss='exponential',
-        n_estimators=100,
-        learning_rate=1.0,
-        max_depth=1
-    )
+    if target_type == np.object:
+        consistency_model = GradientBoostingClassifier(
+            loss='exponential',
+            n_estimators=100,
+            learning_rate=1.0,
+            max_depth=1
+        )
+    else:
+        consistency_model = GradientBoostingRegressor()
     consistency_model.fit(x_train, y_train)
     consistency_model = sk2torch.wrap(consistency_model)
     return consistency_model
 
 
-def get_consistency_penalty(data, generated, consistency_metrics, model, target_index, input_dim):
+def get_consistency_penalty(data, generated, consistency_metrics, model, target_index, input_dim, target_type):
     non_target = [i for i in range(input_dim) if i != target_index]
 
     x_true = data[:, non_target]
@@ -220,7 +224,10 @@ def get_consistency_penalty(data, generated, consistency_metrics, model, target_
 
     result = torch.tensor(0)
     for metric in consistency_metrics:
-        res = metric(pred_true.int(), y_true.int()) - metric(pred_fake.int(), y_fake.int())
+        if target_type == np.object:
+            res = metric(pred_true.int(), y_true.int()) - metric(pred_fake.int(), y_fake.int())
+        else:
+            res = metric(pred_true.float(), y_true.float()) - metric(pred_fake.float(), y_fake.float())
         result += torch.abs(res)
     return result
 
@@ -232,14 +239,21 @@ def train(df, epochs=500, batch_size=64, fair_epochs=10, lamda=0.5, target_col=N
     # if target_col exists, count consistency
     consistency_model = None
     target_index = None
+    target_type = None
     consistency_metrics = None
     if target_col:
         target_index = df.columns.get_loc(target_col)
+        target_type = df[target_col].dtype
         num_classes = len(np.unique(data_train[:, target_index]))
-        consistency_metrics = [
-            F1Score(num_classes=num_classes),
-        ]
-        consistency_model = get_consistency_model(data_train, target_index)
+        if target_type == np.object:
+            consistency_metrics = [
+                F1Score(num_classes=num_classes),
+            ]
+        else:
+            consistency_metrics = [
+                MeanSquaredError(),
+            ]
+        consistency_model = get_consistency_model(data_train, target_index, target_type)
 
     generator = Generator(input_dim, continuous_columns, discrete_columns).to(DEVICE)
     critic = Critic(input_dim).to(DEVICE)
@@ -288,7 +302,8 @@ def train(df, epochs=500, batch_size=64, fair_epochs=10, lamda=0.5, target_col=N
                         consistency_metrics,
                         consistency_model,
                         target_index,
-                        input_dim
+                        input_dim,
+                        target_type
                     )
                     torch.add(gp, consistency_penalty*2)
 

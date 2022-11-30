@@ -7,10 +7,10 @@ import pandas as pd
 import sk2torch
 import torch
 from packaging import version
-from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import GradientBoostingClassifier, GradientBoostingRegressor
 from torch import optim
 from torch.nn import BatchNorm1d, Dropout, LeakyReLU, Linear, Module, ReLU, Sequential, functional
-from torchmetrics import F1Score
+from torchmetrics import F1Score, MeanSquaredError
 
 from synthetic_data.ctgan_consistency.data_sampler import DataSampler
 from synthetic_data.ctgan_consistency.data_transformer import DataTransformer
@@ -281,35 +281,52 @@ class CTGAN(BaseSynthesizer):
         if invalid_columns:
             raise ValueError(f'Invalid columns found: {invalid_columns}')
 
-    def _get_consistency_model(self, train_data, target_index):
+    def _get_consistency_model(self, train_data, target_index, target_type):
         x_train = np.delete(train_data, target_index, 1)
         y_train = train_data[:, target_index]
-        consistency_model = GradientBoostingClassifier(
-            loss='exponential',
-            n_estimators=100,
-            learning_rate=1.0,
-            max_depth=1
-        )
+        if target_type == np.object:
+            consistency_model = GradientBoostingClassifier(
+                loss='exponential',
+                n_estimators=100,
+                learning_rate=1.0,
+                max_depth=1
+            )
+        else:
+            consistency_model = GradientBoostingRegressor()
         consistency_model.fit(x_train, y_train)
         consistency_model = sk2torch.wrap(consistency_model)
         return consistency_model
 
-    def _get_consistency_penalty(self, data, generated, consistency_metrics, model, target_index, input_dim, num_classes):
+    def _get_consistency_penalty(
+            self,
+            data,
+            generated,
+            consistency_metrics,
+            model,
+            target_index,
+            input_dim,
+            target_type,
+            num_classes=None
+    ):
         non_target = [i for i in range(input_dim) if i != target_index]
 
         x_true = data[:, non_target]
         y_true = data[:, target_index]
         x_fake = generated[:, non_target]
         y_fake = generated[:, target_index]
-        y_fake[y_fake < 0] = 0
-        y_fake[y_fake >= num_classes] = num_classes - 1
+        if num_classes:
+            y_fake[y_fake < 0] = 0
+            y_fake[y_fake >= num_classes] = num_classes - 1
 
         pred_true = model.predict(x_true.double())
         pred_fake = model.predict(x_fake.double())
 
         result = torch.tensor(0.0)
         for metric in consistency_metrics:
-            res = metric(pred_true.int(), y_true.int()) - metric(pred_fake.int(), y_fake.int())
+            if target_type == np.object:
+                res = metric(pred_true.int(), y_true.int()) - metric(pred_fake.int(), y_fake.int())
+            else:
+                res = metric(pred_true.float(), y_true.float()) - metric(pred_fake.float(), y_fake.float())
             result += torch.abs(res)
         return result
 
@@ -341,6 +358,7 @@ class CTGAN(BaseSynthesizer):
         self._transformer.fit(train_data, discrete_columns)
 
         target_index = train_data.columns.get_loc(target_col) if target_col else None
+        target_type = train_data[target_col].dtype if target_col else None
 
         train_data = self._transformer.transform(train_data)
 
@@ -348,11 +366,16 @@ class CTGAN(BaseSynthesizer):
         consistency_metrics = None
         num_classes = None
         if target_index:
-            consistency_model = self._get_consistency_model(train_data, target_index)
+            consistency_model = self._get_consistency_model(train_data, target_index, target_type)
             num_classes = len(np.unique(train_data[:, target_index]))
-            consistency_metrics = [
-                F1Score(num_classes=num_classes),
-            ]
+            if target_type == np.object:
+                consistency_metrics = [
+                    F1Score(num_classes=num_classes),
+                ]
+            else:
+                consistency_metrics = [
+                    MeanSquaredError(),
+                ]
 
         self._data_sampler = DataSampler(
             train_data,
@@ -436,6 +459,7 @@ class CTGAN(BaseSynthesizer):
                             consistency_model,
                             target_index,
                             real.size()[1],
+                            target_type,
                             num_classes
                         )
                         # TODO: may-be +penalty?
