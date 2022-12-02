@@ -8,8 +8,8 @@ from sklearn import metrics
 from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier, \
-    GradientBoostingRegressor
+from sklearn.ensemble import (RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier,
+                              GradientBoostingRegressor)
 
 NUM_OF_EXPERIMENTS = 2
 DATA_PATH = 'results/'

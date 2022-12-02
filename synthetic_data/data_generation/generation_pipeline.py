@@ -49,6 +49,24 @@ DATASETS = [
         to_drop=['Date', 'Symbol'],
         target_col='High'
     ),
+    DatasetDefinition(
+        name='CreditRecord',
+        path='data/CreditRecord/application_record_reduced.csv',
+        categorical_cols=['CODE_GENDER', 'FLAG_OWN_CAR', 'FLAG_OWN_REALTY', 'NAME_INCOME_TYPE', 'NAME_EDUCATION_TYPE',
+                          'NAME_FAMILY_STATUS', 'NAME_HOUSING_TYPE', 'FLAG_WORK_PHONE', 'FLAG_PHONE', 'FLAG_EMAIL',
+                          'OCCUPATION_TYPE'],
+        to_drop=['ID', 'DAYS_BIRTH', 'FLAG_MOBIL'],
+        target_col='NAME_EDUCATION_TYPE'
+    ),
+    DatasetDefinition(
+        name='CreditRecord',
+        path='data/CreditRecord/application_record_reduced.csv',
+        categorical_cols=['CODE_GENDER', 'FLAG_OWN_CAR', 'FLAG_OWN_REALTY', 'NAME_INCOME_TYPE', 'NAME_EDUCATION_TYPE',
+                          'NAME_FAMILY_STATUS', 'NAME_HOUSING_TYPE', 'FLAG_WORK_PHONE', 'FLAG_PHONE', 'FLAG_EMAIL',
+                          'OCCUPATION_TYPE'],
+        to_drop=['ID', 'DAYS_BIRTH', 'FLAG_MOBIL'],
+        target_col='AMT_INCOME_TOTAL'
+    ),
 ]
 
 METHODS = [
@@ -87,7 +105,6 @@ def main():
         d = DataSet(dataset.path, to_drop=dataset.to_drop)
         # Sample from original dataset and save to file
         experiments_path = path.join(SYNTHETIC_PATH, dataset.name + '/')
-        #pathlib.Path(experiments_path).mkdir(parents=True, exist_ok=True)
         num_samples = len(d.df)
         original_samples = d.df.sample(n=num_samples)
         pathlib.Path(experiments_path).mkdir(parents=True, exist_ok=True)
