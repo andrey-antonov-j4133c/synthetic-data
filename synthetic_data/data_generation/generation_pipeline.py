@@ -40,13 +40,6 @@ DatasetDefinition(
         path='data/SnP/sp500_stocks_reduced.csv',
         categorical_cols=[],
         to_drop=['Date', 'Symbol'],
-        target_col='Volume'
-    ),
-    DatasetDefinition(
-        name='SnP',
-        path='data/SnP/sp500_stocks_reduced.csv',
-        categorical_cols=[],
-        to_drop=['Date', 'Symbol'],
         target_col='High'
     ),
     DatasetDefinition(
