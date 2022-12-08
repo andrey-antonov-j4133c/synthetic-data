@@ -11,15 +11,15 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.ensemble import (RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier,
                               GradientBoostingRegressor)
 
-NUM_OF_EXPERIMENTS = 2
+NUM_OF_EXPERIMENTS = 48
 DATA_PATH = 'results/'
 
 SYNTHETIC_PATH = 'data/_generated/'
 DATASETS = [
     ('Income', 'gender', 'capital-gain'),
     ('ClimateData', None, 'meantemp'),
-    ('SnP', 'Volume', 'High'),
-    ('CreditRecord', 'NAME_EDUCATION_TYPE', 'AMT_INCOME_TOTAL')
+    ('SnP', None, 'High'),
+    ('CreditRecord', 'FLAG_OWN_REALTY', 'AMT_INCOME_TOTAL')
 ]
 METHODS = [
     'CTGAN',

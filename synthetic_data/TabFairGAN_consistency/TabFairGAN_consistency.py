@@ -222,7 +222,10 @@ def get_consistency_penalty(data, generated, consistency_metrics, model, target_
     pred_true = model.predict(x_true.double())
     pred_fake = model.predict(x_fake.double())
 
-    result = torch.tensor(0)
+    if target_type == np.object:
+        result = torch.tensor(0)
+    else:
+        result = torch.tensor(0.0)
     for metric in consistency_metrics:
         if target_type == np.object:
             res = metric(pred_true.int(), y_true.int()) - metric(pred_fake.int(), y_fake.int())

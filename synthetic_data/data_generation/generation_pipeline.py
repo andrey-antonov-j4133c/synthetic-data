@@ -14,7 +14,7 @@ RAY = True
 SYNTHETIC_PATH = 'data/_generated/'
 
 DATASETS = [
-    DatasetDefinition(
+DatasetDefinition(
         name='Income',
         path='data/income/train.csv',
         categorical_cols=['workclass', 'educational-num', 'marital-status', 'occupation', 'relationship', 'race', 'gender', 'native-country', 'income_>50K', ],
@@ -56,7 +56,7 @@ DATASETS = [
                           'NAME_FAMILY_STATUS', 'NAME_HOUSING_TYPE', 'FLAG_WORK_PHONE', 'FLAG_PHONE', 'FLAG_EMAIL',
                           'OCCUPATION_TYPE'],
         to_drop=['ID', 'DAYS_BIRTH', 'FLAG_MOBIL'],
-        target_col='NAME_EDUCATION_TYPE'
+        target_col='AMT_INCOME_TOTAL'
     ),
     DatasetDefinition(
         name='CreditRecord',
@@ -65,15 +65,15 @@ DATASETS = [
                           'NAME_FAMILY_STATUS', 'NAME_HOUSING_TYPE', 'FLAG_WORK_PHONE', 'FLAG_PHONE', 'FLAG_EMAIL',
                           'OCCUPATION_TYPE'],
         to_drop=['ID', 'DAYS_BIRTH', 'FLAG_MOBIL'],
-        target_col='AMT_INCOME_TOTAL'
-    ),
+        target_col='FLAG_OWN_REALTY'
+    )
 ]
 
 METHODS = [
     CTGAN,
     CTGANConsistency,
-    #TabFiarGAN,
-    #TabFiarGANConsistent
+    TabFiarGAN,
+    TabFiarGANConsistent
 ]
 
 
