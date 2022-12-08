@@ -8,19 +8,12 @@ from synthetic_data.data_generation.method import CTGAN, TabFiarGAN, TabFiarGANC
 
 BASE_DIR = 'data/'
 EXPERIMENTS_RANGE = range(0, 48)
-EPOCHS = 25
+EPOCHS = 10
 RAY = True
 
 SYNTHETIC_PATH = 'data/_generated/'
 
 DATASETS = [
-DatasetDefinition(
-        name='Income',
-        path='data/income/train.csv',
-        categorical_cols=['workclass', 'educational-num', 'marital-status', 'occupation', 'relationship', 'race', 'gender', 'native-country', 'income_>50K', ],
-        to_drop=['education'],
-        target_col='capital-gain'
-    ),
     DatasetDefinition(
         name='Income',
         path='data/income/train.csv',
@@ -34,13 +27,6 @@ DatasetDefinition(
         categorical_cols=[],
         to_drop=['date'],
         target_col='meantemp'
-    ),
-    DatasetDefinition(
-        name='SnP',
-        path='data/SnP/sp500_stocks_reduced.csv',
-        categorical_cols=[],
-        to_drop=['Date', 'Symbol'],
-        target_col='High'
     ),
     DatasetDefinition(
         name='CreditRecord',
@@ -63,8 +49,8 @@ DatasetDefinition(
 ]
 
 METHODS = [
-    CTGAN,
-    CTGANConsistency,
+    #CTGAN,
+    #CTGANConsistency,
     TabFiarGAN,
     TabFiarGANConsistent
 ]
