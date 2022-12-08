@@ -16,7 +16,10 @@ DATA_PATH = 'results/'
 
 SYNTHETIC_PATH = 'data/_generated/'
 DATASETS = [
-    ('Income', 'gender', 'capital-gain')
+    ('Income', 'gender', 'capital-gain'),
+    ('ClimateData', None, 'meantemp'),
+    ('SnP', 'Volume', 'High'),
+    ('CreditRecord', 'NAME_EDUCATION_TYPE', 'AMT_INCOME_TOTAL')
 ]
 METHODS = [
     'CTGAN',
@@ -96,16 +99,21 @@ def regression(df: pandas.DataFrame, target_col: str, reg=None):
 def main():
     for dataset_name, classification_coll, regression_col in DATASETS:
 
-        clf_original_df = pandas.read_csv(
-            path.join(SYNTHETIC_PATH, dataset_name + '/', f'{dataset_name}_{classification_coll}_original.csv')
-        )
-        reg_original_df = pandas.read_csv(
-            path.join(SYNTHETIC_PATH, dataset_name + '/', f'{dataset_name}_{classification_coll}_original.csv')
-        )
-        column_transformers = get_transformers(clf_original_df)
-        for col, encoder in column_transformers.items():
-            clf_original_df[col] = encoder.transform(clf_original_df[col].to_numpy().reshape(-1, 1))
-            reg_original_df[col] = encoder.transform(reg_original_df[col].to_numpy().reshape(-1, 1))
+        if classification_coll:
+            clf_original_df = pandas.read_csv(
+                path.join(SYNTHETIC_PATH, dataset_name + '/', f'{dataset_name}_{classification_coll}_original.csv')
+            )
+            column_transformers = get_transformers(clf_original_df)
+            for col, encoder in column_transformers.items():
+                clf_original_df[col] = encoder.transform(clf_original_df[col].to_numpy().reshape(-1, 1))
+
+        if regression_col:
+            reg_original_df = pandas.read_csv(
+                path.join(SYNTHETIC_PATH, dataset_name + '/', f'{dataset_name}_{regression_col}_original.csv')
+            )
+            column_transformers = get_transformers(reg_original_df)
+            for col, encoder in column_transformers.items():
+                reg_original_df[col] = encoder.transform(reg_original_df[col].to_numpy().reshape(-1, 1))
 
         classification_results = pandas.DataFrame(
             columns=['Exp. number', 'gener. method', 'class. method', 'f1', 'precision', 'recall', 'accuracy']
