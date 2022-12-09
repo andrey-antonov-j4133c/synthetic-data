@@ -24,8 +24,8 @@ DATASETS = [
 METHODS = [
     'CTGAN',
     'CTGANConsistency',
-    #'TabFairGan',
-    #'TabFairGanConsistent'
+    'TabFairGan',
+    'TabFairGanConsistent'
 ]
 
 CLASSIFICATION_METHODS = [
