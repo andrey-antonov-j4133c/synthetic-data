@@ -62,10 +62,10 @@ def get_original_data(df_transformed, df_num_cols, df_obj_cols, df_num_cols_shap
     df_ohe_int = df_transformed[:, :df_num_cols_shape[1]]
     df_ohe_int = scaler.inverse_transform(df_ohe_int)
     df_ohe_cats = df_transformed[:, df_num_cols_shape[1]:]
-    if df_ohe_cats is not None:
+    if df_ohe_cats is not None and len(df_ohe_cats) > 0 and len(df_ohe_cats[0]) > 0:
         df_ohe_cats = ohe.inverse_transform(df_ohe_cats)
     df_int = pd.DataFrame(df_ohe_int, columns=df_num_cols)
-    if df_ohe_cats is not None:
+    if df_ohe_cats is not None and len(df_ohe_cats) > 0 and len(df_ohe_cats[0]) > 0:
         df_cat = pd.DataFrame(df_ohe_cats, columns=df_obj_cols)
         return pd.concat([df_int, df_cat], axis=1)
     else:
@@ -219,19 +219,15 @@ def get_consistency_penalty(data, generated, consistency_metrics, model, target_
     x_fake = generated[:, non_target]
     y_fake = generated[:, target_index]
 
-    pred_true = model.predict(x_true.double())
-    pred_fake = model.predict(x_fake.double())
-
-    if target_type == np.object:
-        result = torch.tensor(0)
-    else:
-        result = torch.tensor(0.0)
+    pred_true = model.predict(x_true.float())
+    pred_fake = model.predict(x_fake.float())
+    result = torch.tensor(0.0)
     for metric in consistency_metrics:
         if target_type == np.object:
             res = metric(pred_true.int(), y_true.int()) - metric(pred_fake.int(), y_fake.int())
         else:
             res = metric(pred_true.float(), y_true.float()) - metric(pred_fake.float(), y_fake.float())
-        result += torch.abs(res)
+        result += torch.abs(res.float())
     return result
 
 
@@ -245,14 +241,15 @@ def train(df, epochs=500, batch_size=64, fair_epochs=10, lamda=0.5, target_col=N
     target_type = None
     consistency_metrics = None
     if target_col:
-        target_index = df.columns.get_loc(target_col)
         target_type = df[target_col].dtype
         num_classes = len(np.unique(data_train[:, target_index]))
         if target_type == np.object:
+            target_index = len(continuous_columns) + [i for i in discrete_columns].index(target_col)
             consistency_metrics = [
                 F1Score(num_classes=num_classes),
             ]
         else:
+            target_index = [i for i in continuous_columns].index(target_col)
             consistency_metrics = [
                 MeanSquaredError(),
             ]
