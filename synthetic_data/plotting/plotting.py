@@ -23,10 +23,10 @@ DATASETS = [
     ('CreditRecord', 'FLAG_OWN_REALTY', 'AMT_INCOME_TOTAL')
 ]
 METHODS = [
-    'CTGAN',
-    'CTGANConsistency',
-    #'TabFairGAN',
-    #'TabFairGanConsistent'
+    #'CTGAN',
+    #'CTGANConsistency',
+    'TabFairGan',
+    'TabFairGanConsistent'
 ]
 
 CLS_METHODS = ['Boosting classifier']
@@ -60,7 +60,8 @@ def time_plot(
 
     plt.title(f"{metric_name} score, real vs generated.\n {efficacy_method}")
     if SAVE:
-        plt.savefig(path.join(fig_path, f'time-plot {efficacy_method}{metric_name}.svg'))
+        method_names = f'{methods[0]}-{methods[1]}'
+        plt.savefig(path.join(fig_path, f'{method_names}-time-plot {efficacy_method}{metric_name}.svg'))
         plt.clf()
     else:
         plt.show()
@@ -88,7 +89,8 @@ def box_plot(
         real_value = real_values[metric][0]
         plt.axhline(y=real_value, label=f"Real {metric} value", color='red')
         if SAVE:
-            plt.savefig(path.join(fig_path, f'box-plot -{efficacy_method}-{metric}.svg'))
+            method_names = f'{methods[0]}-{methods[1]}'
+            plt.savefig(path.join(fig_path, f'{method_names}-box-plot-{efficacy_method}-{metric}.svg'))
             plt.clf()
         else:
             plt.show()
