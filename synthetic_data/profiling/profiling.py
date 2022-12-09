@@ -18,7 +18,7 @@ METHODS = [
     'CTGAN',
     'CTGANConsistency'
 ]
-EXP_NUM = 5
+EXP_NUM = 48
 
 
 def dataset_profile(name: str, method_name: str, col_name: str):
