@@ -318,8 +318,8 @@ class CTGAN(BaseSynthesizer):
             y_fake[y_fake < 0] = 0
             y_fake[y_fake >= num_classes] = num_classes - 1
 
-        pred_true = model.predict(x_true.double())
-        pred_fake = model.predict(x_fake.double())
+        pred_true = model.predict(x_true.float())
+        pred_fake = model.predict(x_fake.float())
 
         result = torch.tensor(0.0)
         for metric in consistency_metrics:
@@ -327,7 +327,7 @@ class CTGAN(BaseSynthesizer):
                 res = metric(pred_true.int(), y_true.int()) - metric(pred_fake.int(), y_fake.int())
             else:
                 res = metric(pred_true.float(), y_true.float()) - metric(pred_fake.float(), y_fake.float())
-            result += torch.abs(res)
+            result += torch.abs(res.float())
         return result
 
     @random_state
